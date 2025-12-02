@@ -1,103 +1,62 @@
-# DiseaseScan: AI-Driven Disease Media Monitoring System
+# AI Disease Media Monitoring System
 
-**DiseaseScan** is an AI-powered system designed for the automated monitoring, classification, and analysis of communicable disease information within digital news. Developed at the **University of Hong Kong, School of Computing and Data Science**, this system integrates Natural Language Processing (NLP), Large Language Models (LLMs), and orchestration frameworks like **LangGraph** and **LangChain** to transform unstructured media content into actionable public health intelligence.
+This project is an AI-powered system designed to monitor, classify, and analyze media content related to communicable diseases. It utilizes Google Vertex AI and LangGraph to create an intelligent agent capable of processing news articles, extracting key disease entities, summarizing content, and generating downloadable reports.
 
-## 📖 Overview
-
-In the modern digital environment, public health officials are inundated with vast amounts of online news, making it difficult to rapidly detect disease outbreaks. Conventional monitoring systems are often reactive and struggle with unstructured content.
-
-**DiseaseScan** solves this by automating the workflow. It operates in two primary modes:
-1.  **Conversational Agent:** A chatbot UI for real-time analysis of specific URLs, HTML files, or text, capable of answering follow-up health questions.
-2.  **Media Monitoring Pipeline:** An end-to-end batch processing system that ingests Excel records and stores structured results in a SQLite database.
-
-## ✨ Key Features
-
-*   **Automated Classification:** Distinguishes between disease-related and non-disease-related news with **98.33% accuracy**.
-*   **Multi-Input Support:** Seamlessly processes inputs via **URL**, **Local HTML files**, or **Plain Text**.
-*   **Smart Entity Extraction:** Precisely extracts **Disease Names** and **Article Titles**, filtering out web noise (navigation menus, footers, ads).
-*   **Intelligent Summarization:** Generates concise summaries capturing crucial outbreak details.
-*   **Report Generation:** Automatically creates formatted **Word reports (.docx)** for downstream analysis.
-*   **Contextual Q&A:** The agent allows users to ask follow-up questions strictly related to the health content of the analyzed article.
-*   **Batch Processing Pipeline:** Ingests news records from Excel and saves structured data (ID, Classification, Title, Disease Name, Summary) to **SQLite**.
-
-## 🏗️ System Architecture
-
-DiseaseScan utilizes a multi-agent workflow orchestrated by **LangGraph**.
-
-### 1. Conversational Agent
-The agent uses a state-machine approach to decide the next step based on user input. It utilizes three specialized tools:
-*   **Identify Input Type:** Determines if input is a URL, HTML file, or Text using Regex/String analysis.
-*   **Fetch and Save HTML:** Retrieves web content (with user-agent spoofing) and saves it locally to prevent redundant requests.
-*   **Analyze Communicable Disease Article:** The core analysis engine that classifies content, extracts entities, and generates reports using structured output.
-
-### 2. Media Monitoring Pipeline
-A wrapper around the agent that:
-1.  Reads an Excel file of news sources.
-2.  Creates timestamped working directories to isolate batches.
-3.  Generates unique Thread IDs.
-4.  Invokes the agent for each record.
-5.  Stores results in a centralized SQLite database.
+The system operates in two distinct modes: a batch processing pipeline for media monitoring and an interactive chatbot for ad-hoc analysis.
 
 ## 🛠️ Tech Stack
 
-*   **Orchestration:** LangChain, LangGraph
-*   **LLMs (Google Gemini):**
-    *   *Orchestration:* Gemini 2.5 Flash Preview 04-17
-    *   *Analysis:* Gemini 2.0 Flash-Lite
-*   **Database:** SQLite
-*   **Data Processing:** Pandas (Excel/DataFrame manipulation)
-*   **Output Generation:** python-docx
-*   **Web Scraping:** BeautifulSoup / Requests
+*   **Core Language:** Python 3
+*   **LLM Provider:** Google Vertex AI (Gemini 2.5 Flash Preview & Gemini 2.0 Flash)
+*   **Orchestration Framework:** LangGraph & LangChain
+*   **Web Framework:** Flask (for the chatbot interface)
+*   **Data Processing:** Pandas, SQLite
+*   **Web Scraping:** Requests, BeautifulSoup4
+*   **Document Generation:** python-docx
+*   **Environment:** Google Colab
 
-## 🚀 Getting Started
+## 📂 System Modules
 
-### Prerequisites
-*   Python 3.9+
-*   Google Gemini API Key
+*   **`analysis_agent.py`**: The central logic engine. It defines the state graph, tools for URL scraping and text analysis, and the prompt templates. It handles the classification, extraction, and summarization logic.
+*   **`ai_disease_media_monitoring.py`**: The ETL (Extract, Transform, Load) script. It manages database connections, reads input files, and orchestrates the batch processing of articles.
+*   **`AI_Disease_Media_Monitoring.ipynb`**: The execution notebook for the batch monitoring workflow.
+*   **`analysis_agent_chatbot.ipynb`**: The execution notebook for the interactive web-based chat interface.
 
-### Installation
+## 🔄 Workflows
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/DiseaseScan.git
-    cd DiseaseScan
-    ```
+### 1. Batch Media Monitoring Pipeline
+This workflow is designed for processing large volumes of news data automatically.
 
-2.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+1.  **Input Data:** The system accepts an Excel file containing a list of news IDs and source locations (URLs or filenames).
+2.  **Initialization:** A local SQLite database and a timestamped output directory are created to store results.
+3.  **Iterative Analysis:** The system iterates through every record in the input file.
+    *   It determines if the input is a live URL or a local file.
+    *   The AI Agent analyzes the content to determine if it relates to communicable diseases.
+    *   If relevant, it extracts the article title, specific disease names, and generates a summary.
+4.  **Data Storage:** Results are upserted into the SQLite database to ensure data integrity.
+5.  **Report Generation:** For every disease-related article, a Microsoft Word report is automatically generated and saved.
+6.  **Final Output:** The system exports the database to an Excel file and compresses all generated reports and data into a ZIP file for download.
 
-3.  **Environment Setup:**
-    Create a `.env` file in the root directory and add your API key:
-    ```env
-    GOOGLE_API_KEY=your_api_key_here
-    ```
+### 2. Interactive Chatbot Interface
+This workflow allows users to interact with the analysis agent in real-time via a web interface.
 
-## 💡 Usage
+1.  **Server Startup:** A Flask web server is initialized within the Colab environment, exposing a public URL.
+2.  **User Interaction:** Users can send messages containing URLs, local filenames, or raw text via the chat UI.
+3.  **Agent Routing:**
+    *   **Input Identification:** The agent first identifies if the user provided a URL, a filename, or text.
+    *   **Fetching:** If a URL is detected, the agent scrapes the HTML content.
+    *   **Analysis:** The content is passed through the classification and extraction models.
+4.  **Response:** The chatbot returns a structured text response detailing the findings (classification, disease names, summary) and indicates if a Word report was generated on the backend.
 
-### Running the Conversational Agent
-Start the UI (e.g., via Streamlit or Chainlit depending on implementation):
-```bash
-python app.py
-```
+## 🧠 Agent Logic (LangGraph)
 
-### Workflow:
+The underlying agent follows a structured decision-making process:
 
-1.Input a URL, HTML filename, or text snippet.
-2.The agent identifies the type and processes the content.
-3.Receive a summary, classification, and Word report.
-4.Ask follow-up questions like "What symptoms are mentioned?"
-
-### Running the Media Monitoring Pipeline
-To process a batch of news articles:
-
-1.Place your source Excel file in the data/ directory.
-2.Run the pipeline script:
-```bash
-python pipeline.py --input data/news_records.xlsx
-```
-3.Results will be saved to results.db (SQLite) and can be exported to a DataFrame.
+1.  **Identify Input Type:** The agent analyzes the user input to decide if it needs to fetch external data (URL) or process provided text.
+2.  **Fetch & Save:** If a URL is provided, the content is retrieved and saved locally.
+3.  **Classify:** The content is analyzed to determine if it discusses communicable diseases. Non-communicable disease content is filtered out.
+4.  **Extract & Summarize:** If the content is relevant, the agent extracts the article title, identifies specific disease entities, and writes a concise summary.
+5.  **Generate Report:** A structured Word document is created containing the analysis results.
 
 ## 📊 Performance Evaluation
 The system was evaluated on a testing dataset of 60 news articles (50/50 split of disease/non-disease related).
@@ -105,3 +64,10 @@ The system was evaluated on a testing dataset of 60 news articles (50/50 split o
 Classification Accuracy: 98.33% (59/60 correctly classified).
 Entity Extraction: High precision in capturing disease names and titles, even in cluttered HTML.
 Prompt Engineering: Utilizes robust System Prompts and Few-Shot Prompting to ensure reliability and strict adherence to the health-analysis role.
+
+## 🚀 Getting Started
+
+1.  **Prerequisites:** Ensure you have a Google Cloud Project with Vertex AI enabled and valid credentials.
+2.  **Installation:** Clone this repository and install the required dependencies listed in `requirements.txt` (or via the notebook cells).
+3.  **Run Batch Mode:** Open `AI_Disease_Media_Monitoring.ipynb`, upload your input Excel file, and run the cells to process the data.
+4.  **Run Chat Mode:** Open `analysis_agent_chatbot.ipynb`, run the cells to start the Flask server, and click the provided public URL to interact with the agent.
