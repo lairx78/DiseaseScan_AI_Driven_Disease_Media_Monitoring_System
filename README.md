@@ -24,6 +24,9 @@ The system operates in two distinct modes: a batch processing pipeline for media
 
 ## 🔄 Workflows
 
+![FIG_1](fig/fig_1.png)
+Figure 1: The visualization of the agent workflows. The agent starts from the agent node. After receiving user input, the agent will make a conditional decision on whether to use tools or not. If yes, it will go to the tool node and select the right tool. Receives the tool messages, back to the agent node, and makes another conditional decision until the agent outputs the final answer.
+
 ### 1. Batch Media Monitoring Pipeline
 This workflow is designed for processing large volumes of news data automatically.
 
@@ -47,8 +50,12 @@ This workflow allows users to interact with the analysis agent in real-time via 
     *   **Fetching:** If a URL is detected, the agent scrapes the HTML content.
     *   **Analysis:** The content is passed through the classification and extraction models.
 4.  **Response:** The chatbot returns a structured text response detailing the findings (classification, disease names, summary) and indicates if a Word report was generated on the backend.
-   
+
+![FIG_2](fig/fig_2.png)
+Figure 2: Demo conversation with the agent, which shows the ability of agent to use tools and the functionality of the tools.
+
 ![FIG_3](fig/fig_3.png)
+Figure 3: Demo conversation with the agent followed by Figure 2, which shows the agent's proficiency in handling follow-up questions.
 
 
 ## 🧠 Agent Logic (LangGraph)
