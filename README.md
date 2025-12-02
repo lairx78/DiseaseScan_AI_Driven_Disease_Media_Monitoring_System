@@ -61,9 +61,9 @@ The underlying agent follows a structured decision-making process:
 ## 📊 Performance Evaluation
 The system was evaluated on a testing dataset of 60 news articles (50/50 split of disease/non-disease related).
 
-Classification Accuracy: 98.33% (59/60 correctly classified).
-Entity Extraction: High precision in capturing disease names and titles, even in cluttered HTML.
-Prompt Engineering: Utilizes robust System Prompts and Few-Shot Prompting to ensure reliability and strict adherence to the health-analysis role.
+* Classification Accuracy: 98.33% (59/60 correctly classified).
+* Entity Extraction: High precision in capturing disease names and titles, even in cluttered HTML.
+* Prompt Engineering: Utilizes robust System Prompts and Few-Shot Prompting to ensure reliability and strict adherence to the health-analysis role.
 
 ## 🚀 Getting Started
 
