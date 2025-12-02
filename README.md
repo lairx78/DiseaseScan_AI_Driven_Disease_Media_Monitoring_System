@@ -48,7 +48,7 @@ This workflow allows users to interact with the analysis agent in real-time via 
     *   **Analysis:** The content is passed through the classification and extraction models.
 4.  **Response:** The chatbot returns a structured text response detailing the findings (classification, disease names, summary) and indicates if a Word report was generated on the backend.
    
-![FIG_3](DiseaseScan_AI_Driven_Disease_Media_Monitoring_System/fig/fig_3.png)
+![FIG_3](fig/fig_3.png)
 
 
 ## 🧠 Agent Logic (LangGraph)
