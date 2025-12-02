@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat with the Agent</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f2f5;
+    }
+    #chat-container {
+      width: 1000px;
+      height: 600px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      overflow-y: scroll;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    .message {
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      white-space: pre-wrap;
+    }
+    .user {
+      background-color: #daf1da;
+      text-align: right;
+    }
+    .agent {
+      background-color: #e1e9f5;
+      text-align: left;
+    }
+    #input-area {
+      width: 1000px;
+      margin: 20px auto 0;
+      display: flex;
+    }
+    #message-input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    #send-button {
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center;">Chat with the Agent</h2>
+  <div id="chat-container"></div>
+  <div id="input-area">
+    <input type="text" id="message-input" placeholder="Type your message here...">
+    <button id="send-button">Send</button>
+  </div>
+  <script>
+    const chatContainer = document.getElementById("chat-container");
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+    function addMessage(content, sender) {
+      const messageDiv = document.createElement("div");
+      messageDiv.classList.add("message", sender);
+      messageDiv.textContent = content;
+      chatContainer.appendChild(messageDiv);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+    sendButton.addEventListener("click", () => {
+      const message = messageInput.value.trim();
+      if (message) {
+        addMessage(message, "user");
+        fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: "message=" + encodeURIComponent(message)
+        })
+        .then(response => response.json())
+        .then(data => {
+          addMessage(data.response, "agent");
+        })
+        .catch(error => {
+          console.error("Error:", error);
+          addMessage("Error contacting the agent.", "agent");
+        });
+        messageInput.value = "";
+      }
+    });
+    messageInput.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        sendButton.click();
+      }
+    });
+  </script>
+</body>
+</html>
