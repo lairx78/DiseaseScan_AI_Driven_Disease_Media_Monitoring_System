@@ -80,29 +80,28 @@ A wrapper around the agent that:
 Start the UI (e.g., via Streamlit or Chainlit depending on implementation):
 ```bash
 python app.py
+```
 
-Workflow:
+### Workflow:
 
-Input a URL, HTML filename, or text snippet.
-The agent identifies the type and processes the content.
-Receive a summary, classification, and Word report.
-Ask follow-up questions like "What symptoms are mentioned?"
-Running the Media Monitoring Pipeline
+1.Input a URL, HTML filename, or text snippet.
+2.The agent identifies the type and processes the content.
+3.Receive a summary, classification, and Word report.
+4.Ask follow-up questions like "What symptoms are mentioned?"
+
+### Running the Media Monitoring Pipeline
 To process a batch of news articles:
 
-Place your source Excel file in the data/ directory.
-Run the pipeline script:
-bash
+1.Place your source Excel file in the data/ directory.
+2.Run the pipeline script:
+```bash
 python pipeline.py --input data/news_records.xlsx
+```
+3.Results will be saved to results.db (SQLite) and can be exported to a DataFrame.
 
-Results will be saved to results.db (SQLite) and can be exported to a DataFrame.
-📊 Performance Evaluation
+## 📊 Performance Evaluation
 The system was evaluated on a testing dataset of 60 news articles (50/50 split of disease/non-disease related).
 
 Classification Accuracy: 98.33% (59/60 correctly classified).
 Entity Extraction: High precision in capturing disease names and titles, even in cluttered HTML.
 Prompt Engineering: Utilizes robust System Prompts and Few-Shot Prompting to ensure reliability and strict adherence to the health-analysis role.
-🔮 Future Work
-Local LLM Integration: To reduce API costs and latency.
-Real-time Alerting: Integration with notification systems for immediate outbreak signals.
-Enhanced Entity Extraction: Improving recall for secondary disease mentions in complex articles.
